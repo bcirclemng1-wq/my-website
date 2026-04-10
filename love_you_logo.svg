@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <title>LOVE YOU starburst logo</title>
+  <defs>
+    <radialGradient id="burst" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#ff4d6d"/>
+      <stop offset="70%" stop-color="#e6003c"/>
+      <stop offset="100%" stop-color="#a4001f"/>
+    </radialGradient>
+  </defs>
+  <!-- Starburst body -->
+  <polygon points="200.0,15.0 226.3,67.6 270.8,29.1 275.0,87.8 330.8,69.2 312.2,125.0 370.9,129.2 332.4,173.7 385.0,200.0 332.4,226.3 370.9,270.8 312.2,275.0 330.8,330.8 275.0,312.2 270.8,370.9 226.3,332.4 200.0,385.0 173.7,332.4 129.2,370.9 125.0,312.2 69.2,330.8 87.8,275.0 29.1,270.8 67.6,226.3 15.0,200.0 67.6,173.7 29.1,129.2 87.8,125.0 69.2,69.2 125.0,87.8 129.2,29.1 173.7,67.6"
+           fill="url(#burst)" stroke="#5c0012" stroke-width="4"
+           stroke-linejoin="miter"/>
+  <!-- Inner disc to hold text clearly -->
+  <circle cx="200" cy="200" r="110" fill="#fff7f9" stroke="#5c0012" stroke-width="3"/>
+  <!-- Text -->
+  <g font-family="Impact, 'Arial Black', sans-serif" text-anchor="middle" fill="#e6003c">
+    <text x="200" y="185" font-size="72" font-weight="900" letter-spacing="2">LOVE</text>
+    <text x="200" y="258" font-size="68" font-weight="900" letter-spacing="2">YOU</text>
+  </g>
+</svg>
