@@ -1,48 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
   <title>LOVE YOU starburst logo</title>
-  <defs>
-    <radialGradient id="burst" cx="50%" cy="50%" r="50%">
-      <stop offset="0%"  stop-color="#ff4d6d"/>
-      <stop offset="70%" stop-color="#e6003c"/>
-      <stop offset="100%" stop-color="#a4001f"/>
-    </radialGradient>
-  </defs>
-  <!-- Starburst body -->
-  <polygon points="200.0,15.0 226.3,67.6 270.8,29.1 275.0,87.8 330.8,69.2 312.2,125.0 370.9,129.2 332.4,173.7 385.0,200.0 332.4,226.3 370.9,270.8 312.2,275.0 330.8,330.8 275.0,312.2 270.8,370.9 226.3,332.4 200.0,385.0 173.7,332.4 129.2,370.9 125.0,312.2 69.2,330.8 87.8,275.0 29.1,270.8 67.6,226.3 15.0,200.0 67.6,173.7 29.1,129.2 87.8,125.0 69.2,69.2 125.0,87.8 129.2,29.1 173.7,67.6"
-           fill="url(#burst)" stroke="#5c0012" stroke-width="4"
+  <!-- 10-point white starburst with thin black outline -->
+  <polygon points="200.0,12.0 240.2,76.4 310.5,47.9 305.2,123.6 378.8,141.9 330.0,200.0 378.8,258.1 305.2,276.4 310.5,352.1 240.2,323.6 200.0,388.0 159.8,323.6 89.5,352.1 94.8,276.4 21.2,258.1 70.0,200.0 21.2,141.9 94.8,123.6 89.5,47.9 159.8,76.4"
+           fill="#ffffff" stroke="#111111" stroke-width="4"
            stroke-linejoin="miter"/>
-  <!-- Inner disc to hold text clearly -->
-  <circle cx="200" cy="200" r="110" fill="#fff7f9" stroke="#5c0012" stroke-width="3"/>
-  <!-- Decorative border: dashed ring + dot ring between disc and text -->
-  <circle cx="200" cy="200" r="102" fill="none" stroke="#a4001f" stroke-width="1.6"
-          stroke-dasharray="5 7" stroke-linecap="round"/>
-  <circle cx="200" cy="200" r="95" fill="none" stroke="#a4001f" stroke-width="0.8"/>
-  <g fill="#a4001f">
-    <circle cx="200.00" cy="115.00" r="2.8"/>
-    <circle cx="226.27" cy="119.16" r="2.8"/>
-    <circle cx="249.96" cy="131.23" r="2.8"/>
-    <circle cx="268.77" cy="150.04" r="2.8"/>
-    <circle cx="280.84" cy="173.73" r="2.8"/>
-    <circle cx="285.00" cy="200.00" r="2.8"/>
-    <circle cx="280.84" cy="226.27" r="2.8"/>
-    <circle cx="268.77" cy="249.96" r="2.8"/>
-    <circle cx="249.96" cy="268.77" r="2.8"/>
-    <circle cx="226.27" cy="280.84" r="2.8"/>
-    <circle cx="200.00" cy="285.00" r="2.8"/>
-    <circle cx="173.73" cy="280.84" r="2.8"/>
-    <circle cx="150.04" cy="268.77" r="2.8"/>
-    <circle cx="131.23" cy="249.96" r="2.8"/>
-    <circle cx="119.16" cy="226.27" r="2.8"/>
-    <circle cx="115.00" cy="200.00" r="2.8"/>
-    <circle cx="119.16" cy="173.73" r="2.8"/>
-    <circle cx="131.23" cy="150.04" r="2.8"/>
-    <circle cx="150.04" cy="131.23" r="2.8"/>
-    <circle cx="173.73" cy="119.16" r="2.8"/>
-  </g>
-  <!-- Text -->
-  <g font-family="Impact, 'Arial Black', sans-serif" text-anchor="middle" fill="#e6003c">
-    <text x="200" y="185" font-size="72" font-weight="900" letter-spacing="2">LOVE</text>
-    <text x="200" y="258" font-size="68" font-weight="900" letter-spacing="2">YOU</text>
+  <!-- Bold black LOVE YOU text stacked in the center -->
+  <g font-family="Impact, 'Arial Black', 'Helvetica Neue', sans-serif"
+     text-anchor="middle" fill="#111111" font-weight="900">
+    <text x="200" y="195" font-size="72" letter-spacing="2">LOVE</text>
+    <text x="200" y="268" font-size="72" letter-spacing="2">YOU</text>
   </g>
 </svg>
