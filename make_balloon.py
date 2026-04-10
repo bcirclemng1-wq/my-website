@@ -168,6 +168,79 @@ def logo_as_data_uri(path: str) -> str:
     return f"data:image/svg+xml;base64,{b64}"
 
 
+def _draw_warped_logo_on_gore(
+    svg_lines: list,
+    gore_index: int,
+    n_gores: int,
+    panel_cx: float,
+    panel_cy: float,
+    radius_mm: float,
+    logo_w_mm: float,
+    logo_h_mm: float,
+    logo_uri: str,
+    gore_clip_id: str,
+    n_strips: int = 24,
+) -> None:
+    """Project (bake) the logo onto a spherical gore and render it inside
+    the given gore clip shape.
+
+    The logo is assumed to be painted on the sphere centered on gore 0 at
+    the equator (longitude 0, latitude 0) using equirectangular mapping:
+    logo pixel (u, v) <-> sphere (lon=u/R, lat=v/R). On the flat gore k:
+
+        x_flat = (u - lon_k * R) * cos(v/R)
+        y_flat = v
+
+    so each horizontal row of the logo is horizontally compressed by
+    cos(latitude) and shifted by -effective_offset * W * cos(latitude).
+    We approximate the continuous warp by slicing the logo into
+    ``n_strips`` horizontal bands and applying a constant scale per band.
+
+    The gore index is remapped to a signed offset in [-N/2, +N/2] so that
+    the logo correctly wraps across the seam between gore N-1 and gore 0
+    instead of the far side of the balloon.
+    """
+    # Signed offset with wraparound: gores on the "left" side of gore 0
+    # get negative offsets so the left edge of the logo lands on them.
+    if gore_index <= n_gores // 2:
+        effective = gore_index
+    else:
+        effective = gore_index - n_gores
+
+    W_mm = 2.0 * math.pi * radius_mm / n_gores  # gore width at equator
+
+    svg_lines.append(f'    <g clip-path="url(#{gore_clip_id})">\n')
+    for j in range(n_strips):
+        v_start = -logo_h_mm / 2.0 + j * logo_h_mm / n_strips
+        v_end = v_start + logo_h_mm / n_strips
+        v_mid = (v_start + v_end) / 2.0
+        theta_mid = v_mid / radius_mm
+        scale_x = math.cos(theta_mid)
+        if scale_x <= 0:  # Past the pole -- nothing to draw for this strip.
+            continue
+
+        strip_id = f"strip_{gore_index}_{j}"
+        svg_lines.append(
+            f'      <clipPath id="{strip_id}" clipPathUnits="userSpaceOnUse">'
+            f'<rect x="-50000" y="{panel_cy + v_start:.3f}" '
+            f'width="100000" height="{(v_end - v_start):.3f}"/></clipPath>\n'
+        )
+
+        tx = panel_cx - effective * W_mm * scale_x
+        ty = panel_cy
+        svg_lines.append(
+            f'      <g clip-path="url(#{strip_id})">\n'
+            f'        <g transform="translate({tx:.3f},{ty:.3f}) scale({scale_x:.6f},1)">\n'
+            f'          <image xlink:href="{logo_uri}" href="{logo_uri}" '
+            f'x="{-logo_w_mm/2.0:.3f}" y="{-logo_h_mm/2.0:.3f}" '
+            f'width="{logo_w_mm:.3f}" height="{logo_h_mm:.3f}" '
+            f'preserveAspectRatio="none"/>\n'
+            f'        </g>\n'
+            f'      </g>\n'
+        )
+    svg_lines.append('    </g>\n')
+
+
 # ---------------------------------------------------------------------------
 # SVG generation helpers.
 # ---------------------------------------------------------------------------
@@ -307,17 +380,22 @@ def generate_slicing_preview(
             f'      <path d="{path_d}"/>\n'
             f'    </clipPath>\n'
         )
-        # Logo offset: gore k is centered on longitude k*2*pi/N, so its
-        # center sits +k*equator_gap_mm to the right of the logo origin.
-        # When we render the logo on gore k's canvas, we translate the
-        # logo LEFT by that amount so the correct slice lines up.
-        logo_x = cx - logo_w_mm / 2.0 - i * equator_gap_mm
-        logo_y = cy - logo_h_mm / 2.0
-        svg.append(
-            f'    <image xlink:href="{logo_uri}" href="{logo_uri}" '
-            f'x="{logo_x:.2f}" y="{logo_y:.2f}" '
-            f'width="{logo_w_mm:.2f}" height="{logo_h_mm:.2f}" '
-            f'clip-path="url(#{clip_id})" preserveAspectRatio="xMidYMid meet"/>\n'
+        # Project (bake) the logo onto the spherical surface of this gore.
+        # Uses wraparound so gore N-1 shows the left edge of the logo and
+        # gore 1 shows the right edge, and applies cos(latitude) horizontal
+        # compression so the reassembled balloon matches the source design.
+        _draw_warped_logo_on_gore(
+            svg_lines=svg,
+            gore_index=i,
+            n_gores=bln.n_gores,
+            panel_cx=cx,
+            panel_cy=cy,
+            radius_mm=bln.radius_cm * MM_PER_CM,
+            logo_w_mm=logo_w_mm,
+            logo_h_mm=logo_h_mm,
+            logo_uri=logo_uri,
+            gore_clip_id=clip_id,
+            n_strips=24,
         )
         svg.append(
             f'    <text x="{cx}" y="{margin + title_h + gore_h + 12}"'
@@ -379,14 +457,20 @@ def generate_with_logo_detail(
         f'  <path d="{path_d}" fill="{color["rgb"]}" fill-opacity="0.35"'
         f' stroke="#222" stroke-width="0.6"/>\n'
     )
-    # Logo centered on gore.
-    logo_x = cx - logo_w_mm / 2.0
-    logo_y = cy - logo_h_mm / 2.0
-    svg.append(
-        f'  <image xlink:href="{logo_uri}" href="{logo_uri}"'
-        f' x="{logo_x:.2f}" y="{logo_y:.2f}"'
-        f' width="{logo_w_mm:.2f}" height="{logo_h_mm:.2f}"'
-        f' clip-path="url(#gore_main)" preserveAspectRatio="xMidYMid meet"/>\n'
+    # Project the logo onto gore 0 with cos(latitude) warping so the
+    # shown single gore matches what the print shop will actually print.
+    _draw_warped_logo_on_gore(
+        svg_lines=svg,
+        gore_index=0,
+        n_gores=bln.n_gores,
+        panel_cx=cx,
+        panel_cy=cy,
+        radius_mm=bln.radius_cm * MM_PER_CM,
+        logo_w_mm=logo_w_mm,
+        logo_h_mm=logo_h_mm,
+        logo_uri=logo_uri,
+        gore_clip_id="gore_main",
+        n_strips=24,
     )
     # Equator line + pole markers.
     svg.append(
